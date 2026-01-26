@@ -1,0 +1,38 @@
+name: Java CI
+
+on:
+  push:
+    branches:
+      - master  # Aplica-se a todos os pushes na branch master
+  pull_request:
+    branches:
+      - master  # Aplica-se a todos os pull requests na branch master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Fazer checkout do repositório
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Configurar o JDK (Java Development Kit)
+      - name: Setup JDK
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17' # Versão do Java
+          distribution: 'temurin'
+          
+      # Configura o Maven (build tool usado)
+      - name: Cache Maven packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-m2
+
+      # Executar testes
+      - name: Build and Test
+        run: mvn test
