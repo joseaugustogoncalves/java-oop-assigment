@@ -3,36 +3,51 @@ name: Java CI
 on:
   push:
     branches:
-      - master  # Aplica-se a todos os pushes na branch master
+      - master  # Atualize aqui para sua branch principal
   pull_request:
     branches:
-      - master  # Aplica-se a todos os pull requests na branch master
+      - master  # Atualize aqui para pull requests direcionados à sua branch principal
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
 
     steps:
-      # Fazer checkout do repositório
-      - name: Checkout code
+
+      # 1. Checkout do código do repositório do aluno
+      - name: Checkout repository
         uses: actions/checkout@v3
 
-      # Configurar o JDK (Java Development Kit)
-      - name: Setup JDK
+      # 2. Configuração do JDK 17
+      - name: Setup Java 17
         uses: actions/setup-java@v3
         with:
-          java-version: '17' # Versão do Java
-          distribution: 'temurin'
-          
-      # Configura o Maven (build tool usado)
-      - name: Cache Maven packages
-        uses: actions/cache@v3
-        with:
-          path: ~/.m2
-          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            ${{ runner.os }}-m2
+          java-version: 17
+          distribution: temurin
 
-      # Executar testes
-      - name: Build and Test
-        run: mvn test
+      # 3. Buscar os testes da branch do professor (solucao-final)
+      - name: Fetch Tests from Professor Repository
+        run: |
+          echo "Clonando os testes do repositório do professor"
+          git remote add joseaugustogoncalves https://github.com/joseaugustogoncalves/java-oop-assigment.git
+          git fetch joseaugustogoncalves solucao-final
+          git checkout joseaugustogoncalves/solucao-final -- src/test
+
+      # 4. Debug para garantir que os testes foram mesclados corretamente
+      - name: Debug Directory Structure
+        run: |
+          echo "Verificando se os testes estão no lugar correto:"
+          find .
+          echo "Arquivos em src/test/java:"
+          find src/test/java || echo "Nenhum arquivo encontrado em src/test/java"
+
+      # 5. Limpar arquivos do BlueJ
+      - name: Clean BlueJ Files
+        run: |
+          echo "Limpando arquivos do BlueJ"
+          find . -name "*.bluej" -delete
+          find . -name "*.ctxt" -delete
+
+      # 6. Rodar os testes com Maven
+      - name: Run Maven Tests
+        run: mvn clean test

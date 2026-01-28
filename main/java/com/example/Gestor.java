@@ -1,3 +1,5 @@
+package com.example;
+
 public class Gestor extends Funcionario {
     private double bonus;
 
