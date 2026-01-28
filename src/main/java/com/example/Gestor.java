@@ -9,4 +9,8 @@ public class Gestor extends Funcionario {
     }
 
     // Implementar o método calcularSalario
+    @Override
+    public double calcularSalario() {
+        return getSalarioBase() + (getSalarioBase() * bonus);
+    }
 }

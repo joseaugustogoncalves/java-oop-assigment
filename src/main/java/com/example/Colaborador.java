@@ -6,4 +6,8 @@ public class Colaborador extends Funcionario {
     }
 
     // Implementar o método calcularSalario
+    @Override
+    public double calcularSalario() {
+        return getSalarioBase() - (getSalarioBase() * 0.10);
+    }
 }
